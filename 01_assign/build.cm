@@ -1,0 +1,17 @@
+group
+  (* CM allows you to selectively export defined modules (structures,
+     signatures and functors) by listing them here. It's useful for
+     libraries. *)
+
+  source (-)       (* export all defined modules *)
+
+  structure Babies   (* OR, export selectively *)
+  structure Csc330
+  structure Main
+
+is
+  $/basis.cm
+  src/babies.sml
+  src/csc330.sml
+  src/main.sml
+

@@ -1,0 +1,39 @@
+================= Syntax ====================
+
+:: Static Environment 
+
+:: Something like a varibable but not quite called a 'Binding' 
+:: Stored like | x | 10 | int | 
+::Type can be inferred 
+val x = 10; 
+
+:: Binding example, can specify type 
+val x = 10:int;
+
+:: Stored as 
+:: | y | 20 | int | 
+:: | f | int->int | 
+:: | y | 30 | int | 
+
+:: Inside of f, a is defined 
+:: Which 'y' will be used in the function? 
+:: At time a the function there | y | 20 | int |  exists which will be the one used in the function 
+:: So | y | 20 | int | will be used in the function 
+:: After the second y is defined, the old y cannot be accessed outside the function
+
+val y = 20;
+fun f a = a + y; 
+val y = 10 + y;
+
+:: Sometimes compiler can optimize unused code
+:: Must be a unused Binding
+:: Must be a pure function if a function is involved 
+:: Pure functions will be defined more later
+
+::Functions only have a single expression 
+
+================= Sematics ====================
+
+:: Cannot mix types 
+:: Ex. int + float, 1 + 1.0 
+

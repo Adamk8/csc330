@@ -1,0 +1,46 @@
+Read 4340 babies. Starting year 1920. Each baby has 100 entries.
+JENNA
+ Total: 2299
+ Years: 45
+ 2019: 11
+ First: 1975 10
+ Last: 2019 11
+ Min: 1976 5
+ Max: 1992 116
+ Avg: 22.99
+EMILY
+ Total: 9178
+ Years: 89
+ 2019: 115
+ First: 1920 7
+ Last: 2019 115
+ Min: 1932 5
+ Max: 2000 359
+ Avg: 91.78
+JESSICA
+ Total: 10136
+ Years: 53
+ 2019: 22
+ First: 1964 5
+ Last: 2019 22
+ Min: 1964 5
+ Max: 1990 532
+ Avg: 101.36
+KATY
+ Total: 52
+ Years: 10
+ 2019: 0
+ First: 1980 5
+ Last: 2010 5
+ Min: 1980 5
+ Max: 1996 7
+ Avg: 0.52
+NATASHA
+ Total: 3106
+ Years: 51
+ 2019: 5
+ First: 1968 8
+ Last: 2019 5
+ Min: 2019 5
+ Max: 1988 140
+ Avg: 31.06

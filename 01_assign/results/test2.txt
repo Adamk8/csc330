@@ -1,0 +1,75 @@
+Read 4340 babies. Starting year 1920. Each baby has 100 entries.
+EMMA
+ Total: 7034
+ Years: 75
+ 2019: 167
+ First: 1920 7
+ Last: 2019 167
+ Min: 1929 5
+ Max: 2003 351
+ Avg: 70.34
+EMILY
+ Total: 9178
+ Years: 89
+ 2019: 115
+ First: 1920 7
+ Last: 2019 115
+ Min: 1932 5
+ Max: 2000 359
+ Avg: 91.78
+MADISON
+ Total: 3666
+ Years: 34
+ 2019: 62
+ First: 1986 7
+ Last: 2019 62
+ Min: 1986 7
+ Max: 2001 200
+ Avg: 36.66
+KATHLYN
+Baby name [KATHLYN] was not found
+KATHRYN
+ Total: 3080
+ Years: 82
+ 2019: 0
+ First: 1927 5
+ Last: 2017 5
+ Min: 1927 5
+ Max: 1958 110
+ Avg: 30.8
+MARY
+ Total: 11527
+ Years: 100
+ 2019: 9
+ First: 1920 209
+ Last: 2019 9
+ Min: 2019 9
+ Max: 1947 271
+ Avg: 115.27
+SHANIA
+ Total: 209
+ Years: 15
+ 2019: 0
+ First: 1995 41
+ Last: 2017 5
+ Min: 2001 5
+ Max: 1996 54
+ Avg: 2.09
+SNEHA
+ Total: 5
+ Years: 1
+ 2019: 0
+ First: 2006 5
+ Last: 2006 5
+ Min: 2006 5
+ Max: 2006 5
+ Avg: 0.05
+SIMRANJIT
+ Total: 15
+ Years: 3
+ 2019: 0
+ First: 1995 5
+ Last: 1999 5
+ Min: 1995 5
+ Max: 1999 5
+ Avg: 0.15
