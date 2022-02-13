@@ -11,3 +11,6 @@
 02_assign/src/.cm/x86-unix/set.sml
 02_assign/src/.cm/x86-unix/testing.sml
 02_assign/set-image.x86-linux
+
+03_assign/src/.cm/*
+in_class_work

@@ -1,6 +1,16 @@
 datatype 'a set = EmptySet of ('a * 'a -> order) | Set of 'a list * ('a * 'a -> order)
 exception SetIsEmpty
 
+infix 1 IDENTICAL
+infix 3 EXCEPT
+infix 4 IS_SUBSET_OF
+infix 5 INTERSECT
+infix 6 UNION
+infix 7 IN
+infix 8 CONTAINS        
+infix 9 ++
+infix 9 --
+
 fun comp_list_any (a: 'a list, b: 'a list, fcomp : ('a * 'a) -> order) =
     let 
         fun any_comp(lst_a,lst_b) =
@@ -266,6 +276,18 @@ fun map_set (s, fcomp, f) =
 fun add_one num = 
     num + 1
 
+
+fun s -- v = remove_from_set(s,v)
+fun s ++ v = insert_into_set(s,v)
+fun s IDENTICAL t = equal_set(s,t)
+fun s UNION t = union_set(s,t)
+fun s INTERSECT t = intersect_set(s,t)
+fun s EXCEPT t = except_set(s,t)
+fun v IN s = in_set(s,v)
+fun s IS_SUBSET_OF t = is_subset_of(s,t)
+
+
+
 val x1 = Set(["abc","hi","name"],String.compare)
 val x2 = Set([1,2,3,67,87],Int.compare)
 val x3 = Set([1,2,3,67,87],Int.compare)
@@ -277,6 +299,8 @@ val l1 = [1,2,3,4]
 val l2 = []
 val l3 = [[5,6],[1,2],[3,4]]
 val empty = EmptySet Int.compare
+
+val test1 = x2 ++ 90
 
 val e1 = is_empty_set(x1)
 val e2 = is_empty_set(x7)
