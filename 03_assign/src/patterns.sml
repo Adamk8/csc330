@@ -29,6 +29,7 @@ datatype value = Const of int
 
 (* write your tree functions here *)
 
+
 fun tree_insert_in_order(t, v) = 
     case t of
         emptyTree => nodeTree(v,emptyTree,emptyTree)
@@ -39,7 +40,7 @@ fun tree_insert_in_order(t, v) =
         | nodeTree (curr, left, right) =>
             if v <= curr
             then nodeTree(curr,tree_insert_in_order(left,v),right)
-            else nodeTree(curr,left,nodeTree(v,emptyTree,emptyTree))
+            else nodeTree(curr,left,tree_insert_in_order(right,v))
 
    
 fun tree_fold_pre_order f acc t = 
@@ -90,12 +91,7 @@ fun tree_delete(t,v) =
                     else raise NotFound
             | nodeTree (curr, emptyTree, right) =>
                 if v = curr
-                then 
-                    let 
-                        val max_child = valOf(tree_max(right))
-                    in
-                        nodeTree(max_child,emptyTree,tree_delete(right,max_child))
-                    end
+                then right
                 else 
                     if v < curr
                     then raise NotFound
@@ -114,32 +110,113 @@ fun tree_delete(t,v) =
                     else nodeTree(curr,left,tree_delete(right,v))
 
 
-
 fun tree_to_list t = 
-    tree_fold_pre_order (fn (acc,x) => acc@[x]) [] t
+    let
+      val result = tree_fold_pre_order (fn (acc,x) => acc@[x]) [] t
+    in
+        result
+    end
+    
 
 fun tree_filter f t = 
     case t of 
-        emptyTree => emptyTree
+        emptyTree => t
         | nodeTree(x,left,right) => 
             if f(x)
-            then nodeTree(x,tree_filter f left,tree_filter f right)
-            else 
-                let 
-                    val new_tree = tree_delete(t,x)
-                in    
-                   tree_filter f new_tree
-                end
+            then nodeTree(x,(tree_filter f left),(tree_filter f right))
+            else (tree_filter f (tree_delete(t,x)))
 
 fun tree_sum_even t = 
-    let 
-        val filtered_tree = tree_filter (fn x => x mod 2 = 0) t
-    in 
-        tree_fold_pre_order (fn (acc,x) => acc + x) 0 filtered_tree
+        tree_fold_pre_order (fn (acc,x) => acc + x) 0 (tree_filter (fn x => x mod 2 = 0) t)
+
+
+fun first_answer f lst =
+    case lst of 
+        [] => raise NoAnswer
+        | head::tail => 
+            if isSome(f(head))
+            then valOf(f(head))
+            else first_answer f tail
+
+fun all_answers f lst = 
+    let
+        fun check_elements(lst, acc) =
+            case lst of 
+                [] => acc 
+                | head::tail => 
+                    case f(head) of 
+                        SOME(x) => check_elements(tail, (SOME (valOf(acc)@x)))
+                        | NONE => NONE
+
+    in
+      check_elements(lst, (SOME []))
     end
 
 
+fun check_pattern p = 
+    let 
+        fun get_strings (p,acc) = 
+            case p of 
+                Variable s => acc@[s]
+                | ConstructorP(_,Variable(s)) => acc@[s]
+                | TupleP (head::[]) => (get_strings(head, acc))
+                | TupleP (head::tail) => (get_strings(head, acc))@(get_strings ((TupleP tail), acc))
+                | _ => acc
 
+        fun not_in_list (s,lst) = 
+            case lst of 
+                [] => true
+                | head::tail =>
+                    if head = s 
+                    then false
+                    else not_in_list(s,tail)
+
+        fun no_repeats lst = 
+            case lst of 
+                [] => true
+                | head::tail => not_in_list(head,tail) andalso no_repeats tail
+        
+        fun all_strings p = List.foldl (get_strings) [] p
+
+        val string_list = 
+            case p of 
+                TupleP lst => all_strings lst
+                | Variable s => [s]
+                | ConstructorP(_,Variable(s)) => [s]
+                | _ => []
+
+        val result = no_repeats string_list
+    in 
+       result
+    end
+
+fun match(v, p) =
+    let 
+        fun compare_tuples(v_lst, p_lst) = 
+            if List.length(v_lst) = List.length(p_lst)
+            then all_answers (fn x => case x of (a,b) => (match(a, b))) (ListPair.zip(v_lst,p_lst))
+            else NONE 
+
+    in 
+        case (v,p) of 
+            (_,Wildcard) => SOME []
+            | (Unit,UnitP) => SOME []
+            | (_,Variable s) => SOME [(s,v)]
+            | (Const(i),ConstP(j)) => if i = j then SOME [] else NONE
+            | (Tuple(v_lst),TupleP(p_lst)) => compare_tuples(v_lst,p_lst)
+            | (Constructor(s1,v1),ConstructorP(s2,p2)) => 
+                if s1 = s2 andalso isSome(match(v1, p2))
+                then (match(v1, p2))
+                else NONE 
+            | (_,_) => NONE
+    end
+
+fun first_match v p_lst = 
+    let 
+        fun curryed_match v p = match(v,p)
+    in
+        (SOME (first_answer (curryed_match v) p_lst)) handle NoAnswer => NONE
+    end
 
 
 
