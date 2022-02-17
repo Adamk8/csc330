@@ -1,6 +1,6 @@
 (*
-Your name:
-Your student id:
+Your name: Adam Kwan
+Your student id: V00887099
 *)
 
 structure Patterns =
