@@ -1,0 +1,29 @@
+#lang racket
+(define (add-pointwise lst_a lst_b)
+  (cond [(not (list? lst_a)) (error "illegal parameter")]
+        [(not (list? lst_b)) (error "illegal parameter")]
+        [#t (cond [(and (null? lst_a) (null? lst_b) '())]
+                  [(null? lst_a) (cons (car lst_b) (add-pointwise '() (cdr lst_b)))]
+                  [(null? lst_b) (cons (car lst_a) (add-pointwise (cdr lst_a) '()))]
+                  [#t (cons (+ (car lst_a) (car lst_b)) (add-pointwise (cdr lst_a) (cdr lst_b)))]
+              )
+            ]
+        )
+  )
+
+(add-pointwise '(1 2 3 5 6) '(2 5))
+
+(define (add-pointwise-lists lst)
+  (if (and (list? lst) (list? (car lst)))
+      (#t)
+      (error "illegal parameter")
+    )
+  )
+
+(define (add-pointwise-lists-2 lst)
+    (if (and (list? lst) (list? (car lst)))
+      (addi-pointwise (car lst))
+      (error "illegal parameter")
+    )
+  )
+  )
