@@ -45,24 +45,24 @@
   ))
 
 ;#4
-(define (stream-for-n-steps stream count)
-  (define (stream-up curr)
-    (if (< curr count)
-        (cons (stream curr) (stream-up (+ curr 1)))
-        '()
-        )
-   )
-  (stream-up 0) 
-  )
+(define (stream-for-n-steps stream n)
+  (letrec ([helper (lambda (stream i)
+                     (let ([stream-pr (stream)])
+                       (if (> i n)
+                           '()
+                           (cons (car stream-pr) (helper (cdr stream-pr) (+ i 1))))))])
+    (helper stream 1)
+    ))
 
 ;#5
 (define fibo-stream
     (letrec ([f (lambda (x1 x2)
-        (cond [(= x1 0) (cons 0 (lambda () (f x2 (+ x2 x1))))]
-             [(= x2 1) (cons 1 (lambda () (f x2 (+ x2 x1))))]
-             [#t (cons (+ x1 x2) (lambda () (f x2 (+ x2 x1))))]
+        (cond [(and (= x2 1) (= x1 1)) (cons 1 (lambda () (f x2 (+ x2 x1))))]
+              [(= x2 0) (cons 0 (lambda () (f x2 1)))]
+              [(= x2 1) (cons 1 (lambda () (f x2 (+ x2 x1))))]
+              [#t (cons x2 (lambda () (f x2 (+ x2 x1))))]
              ))])
-      (lambda () (f 0 1))
+      (lambda () (f 0 0))
    ) 
  )
 
@@ -72,21 +72,64 @@
     (letrec ([helper (lambda (new-stream)
                      (let ([stream-pr (new-stream)])
                        (if (check (car stream-pr))
-                           new-stream
+                           (lambda () (cons (car stream-pr) (helper (cdr stream-pr))))
                            (helper (cdr stream-pr)))
                        ))])
     (helper stream)
     ))
 
 ;#7
-(define palyndromic-numbers #f)
+(define palyndromic-numbers
+  (filter-stream (lambda (x)
+    (let* ([str (number->string x)]
+             [str-lst (string->list str)])
+      (equal? str-lst (reverse str-lst))
+
+      )) nat-num-stream)
+  )
 
 ;#8 macro create-stream
+
+(define-syntax create-stream
+  (syntax-rules (using starting at with increment)
+    [(create-stream e1 using e2 starting at e3 with increment e4)
+     (define e1 
+     (letrec ([f (lambda(x) (cons (e2 x) (lambda () (f (+ x e4)))))])
+       (lambda () (f e3))
+       ))
+  ]))
+
 
 ; part 2
 
 ;#1
-(define vector-assoc #f)
+(define (vector-assoc v vec)
+  (letrec ([helper (lambda (index end)
+                     (if (> end index)
+                         (let ([element (vector-ref vec index)])
+                           (cond [(pair? element) (if (= v (car element))
+                                                      element
+                                                      (helper (+ index 1) end))]
+                                 [#t (helper (+ index 1) end)]
+                                 ))
+                         #f))])
+    (helper 0 (vector-length vec))
+  ))
 
 ;#2
-(define cached-assoc #f)
+(define (cached-assoc xs n)
+  (letrec ([cached-vec (make-vector n #f)]
+           [vec-pos 0]
+           [return-func (lambda (x)
+                (let ([ans (vector-assoc x cached-vec)])
+                  (if ans
+                        ans
+                      (let ([new-ans (assoc x xs)])
+                        (if (pair? new-ans)
+                            (begin
+                              (vector-set! cached-vec vec-pos new-ans)
+                              (set! vec-pos (modulo (+ vec-pos 1) n))
+                              new-ans)
+                            #f)))))])
+     return-func
+    ))

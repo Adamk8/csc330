@@ -57,11 +57,12 @@
   
 (define fibo-stream
     (letrec ([f (lambda (x1 x2)
-        (cond [(= x1 0) (cons 0 (lambda () (f x2 (+ x2 x1))))]
-             [(= x2 1) (cons 1 (lambda () (f x2 (+ x2 x1))))]
-             [#t (cons (+ x1 x2) (lambda () (f x2 (+ x2 x1))))]
+        (cond [(and (= x2 1) (= x1 1)) (cons 1 (lambda () (f x2 (+ x2 x1))))]
+              [(= x2 0) (cons 0 (lambda () (f x2 1)))]
+              [(= x2 1) (cons 1 (lambda () (f x2 (+ x2 x1))))]
+              [#t (cons x2 (lambda () (f x2 (+ x2 x1))))]
              ))])
-      (lambda () (f 0 1))
+      (lambda () (f 0 0))
    ) 
  )
 
@@ -71,7 +72,7 @@
     (letrec ([helper (lambda (new-stream)
                      (let ([stream-pr (new-stream)])
                        (if (check (car stream-pr))
-                           new-stream
+                           (lambda () (cons (car stream-pr) (helper (cdr stream-pr))))
                            (helper (cdr stream-pr)))
                        ))])
     (helper stream)
@@ -81,27 +82,91 @@
 (filter-stream (lambda (i) (> i 5)) nat-num-stream) 5)
 
 (define is-palyndrome
-  (lambda (x)
-    (letrec ([str (number->string x)]
-             [len (string-length str)])
-      (cond [(= len 1) #t]
-            [(= (modulo len 2) 0)
-             (letrec ([half (quotient len 2)])
-               (if (equal? (substring str 0 half) (substring str half))
-                   #t
-                   #f))]
-            [#t (letrec ([half (quotient len 2)])
-                  (if (equal? (substring str 0 half) (substring str (+ half 1)))
-                      #t
-                      #f))]))))
+(lambda (x)
+    (let* ([str (number->string x)]
+             [str-lst (string->list str)])
+      (equal? str-lst (reverse str-lst))
 
-(define (palyndromic-numbers)
-  (letrec ([f (lambda (x) (filter-stream is-palyndrome nat-num-stream))])
-  (lambda () (f 0))
-    )
+      )))
+
+(define palyndromic-numbers
+  (filter-stream (lambda (x)
+    (let* ([str (number->string x)]
+             [str-lst (string->list str)])
+      (equal? str-lst (reverse str-lst))
+
+      )) nat-num-stream)
   )
 
-
+(is-palyndrome 1)
+(is-palyndrome 12)
+(is-palyndrome 11)
+(is-palyndrome 101)
 (stream-for-n-steps palyndromic-numbers 20)
 
+(define-syntax create-stream
+  (syntax-rules (using starting at with increment)
+    [(create-stream e1 using e2 starting at e3 with increment e4)
+     (define e1 
+     (letrec ([f (lambda(x) (cons (e2 x) (lambda () (f (+ x e4)))))])
+       (lambda () (f e3))
+       ))
+  ]))
+
                       
+(create-stream squares using (lambda (x) (* x x))
+starting at (begin (print "starting") 5)
+with increment (begin (print "inc") 2))
+
+(squares)
+(stream-for-n-steps squares 5)
+
+
+(define (vector-assoc v vec)
+  (letrec ([helper (lambda (index end)
+                     (if (> end index)
+                         (let ([element (vector-ref vec index)])
+                           (cond [(pair? element) (if (= v (car element))
+                                                      element
+                                                      (helper (+ index 1) end))]
+                                 [#t (helper (+ index 1) end)]
+                                 ))
+                         #f))])
+    (helper 0 (vector-length vec))
+  ))
+
+(vector-assoc 4 (vector (cons 2 1) (cons 3 1) (cons 4 1) (cons 5 1)))
+
+
+(define (cached-assoc xs n)
+  (letrec ([cached-vec (make-vector n #f)]
+           [vec-pos 0]
+           [return-func (lambda (x)
+                (let ([ans (vector-assoc x cached-vec)])
+                  (if ans
+                        ans
+                      (let ([new-ans (assoc x xs)])
+                        (if (pair? new-ans)
+                            (begin
+                              (vector-set! cached-vec vec-pos new-ans)
+                              (set! vec-pos (modulo (+ vec-pos 1) n))
+                              new-ans)
+                            #f)))))])
+     return-func
+    ))
+
+
+(cached-assoc  (list (cons 1 2) (cons 3 4)) 3) 
+
+
+(let
+    [(cache (cached-assoc  (list (cons 1 2) (cons 3 4)) 3) )]
+  (begin
+    (cache 3)
+    (cache 3)
+    (cache 1)
+    (cache 1)
+    (cache 2))
+)
+
+
