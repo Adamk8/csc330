@@ -45,13 +45,13 @@
   ))
 
 ;#4
-(define (stream-for-n-steps stream n)
-  (letrec ([helper (lambda (stream i)
-                     (let ([stream-pr (stream)])
+(define (stream-for-n-steps s n)
+  (letrec ([helper (lambda (s i)
+                     (let ([stream-pr (s)])
                        (if (> i n)
                            '()
                            (cons (car stream-pr) (helper (cdr stream-pr) (+ i 1))))))])
-    (helper stream 1)
+    (helper s 1)
     ))
 
 ;#5
@@ -92,10 +92,10 @@
 
 (define-syntax create-stream
   (syntax-rules (using starting at with increment)
-    [(create-stream e1 using e2 starting at e3 with increment e4)
-     (define e1 
-     (letrec ([f (lambda(x) (cons (e2 x) (lambda () (f (+ x e4)))))])
-       (lambda () (f e3))
+    [(create-stream name using f starting at i0 with increment delta)
+     (define name 
+     (letrec ([f (lambda(x) (cons (f x) (lambda () (f (+ x delta)))))])
+       (lambda () (f i0))
        ))
   ]))
 
