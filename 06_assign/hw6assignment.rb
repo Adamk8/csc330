@@ -24,7 +24,7 @@ class MyPiece < Piece
     MyPiece.new(All_My_Pieces.sample, board)
   end
   def self.cheat_piece (board)
-    MyPiece.new([[0,0]], board)
+    MyPiece.new([[[0,0]]], board)
   end
 end
 
